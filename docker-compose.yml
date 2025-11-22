@@ -1,0 +1,30 @@
+services:
+  nfs-server:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-server
+    privileged: true
+    restart: always
+    environment:
+      SHARED_DIRECTORY: /data
+    volumes:
+      - ./storage:/data
+    ports:
+      - "2049:2049"
+
+  backend:
+    build: ./backend
+    container_name: media-backend
+    restart: always
+    environment:
+      MEDIA_ROOT: /mnt/nfs
+      JWT_SECRET: super-secret-change-me-plese   # trocar dps!! ;-;
+      JWT_EXPIRES_IN: 1h
+      AUTH_USER: kgcmina@admin
+      AUTH_PASS: kgcmina@admin
+      CORS_ORIGIN: "*"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./storage:/mnt/nfs
+    depends_on:
+      - nfs-server
