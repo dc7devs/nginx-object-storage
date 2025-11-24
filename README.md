@@ -1,8 +1,8 @@
 ### Clone & start de servidor
 
 ```bash
-git clone git@github.com:dc7devs/detritus-nfs-server.git
-cd detritus-nfs-server
+git clone git@github.com:dc7devs/nfs-http-server.git
+cd nfs-http-server
 
 docker compose up -d
 ```
