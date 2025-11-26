@@ -11,7 +11,7 @@
 
     <div class="max-w-3xl mx-auto py-10 px-4">
       <h1 class="text-3xl font-bold text-center mb-3">Local Object Storage</h1>
-      <p class="text-center text-gray-600 mb-8">NFS local servido por servidor HTTP (protegido com JWT)</p>
+      <p class="text-center mb-6">Nginx com X-Accel-Redirect e JWT</p>
 
       <div class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-semibold mb-4">Login</h2>
@@ -68,8 +68,8 @@
     </div>
 
     <script>
-      const backendBase = "http://localhost:3000";
-      let token = null;
+      const backendBase = "http://172.30.148.6:3333";
+      let loginToken = null;
 
       async function login() {
         const username = document.getElementById("user").value;
@@ -88,47 +88,48 @@
         }
 
         const data = await res.json();
-        token = data.token;
+        loginToken = data.token;
 
         document.getElementById("status").innerText =
           "Login OK, token recebido.";
 
-        loadImage("images/frame_00001.jpg");
+        loadImage("images/frame_0001.jpg");
         loadVideo("videos/video1.mp4");
       }
 
-      async function loadImage(relativePath) {
-        if (!token) return;
+      async function signPath(relativePath) {
+        if (!loginToken) return null;
 
-        const url = `${backendBase}/media/${relativePath}`;
-        const res = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(`${backendBase}/media/sign`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${loginToken}`,
+          },
+          body: JSON.stringify({ path: "/" + relativePath }),
         });
 
         if (!res.ok) {
-          console.error("Erro ao baixar imagem:", res.status);
-          return;
+          console.error("Erro ao assinar URL:", res.status);
+          return null;
         }
 
-        const blob = await res.blob();
-        document.getElementById("img").src = URL.createObjectURL(blob);
+        const data = await res.json();
+        return data.signed_url;
+      }
+
+      async function loadImage(relativePath) {
+        const signedUrl = await signPath(relativePath);
+        if (!signedUrl) return;
+
+        document.getElementById("img").src = signedUrl;
       }
 
       async function loadVideo(relativePath) {
-        if (!token) return;
+        const signedUrl = await signPath(relativePath);
+        if (!signedUrl) return;
 
-        const url = `${backendBase}/media/${relativePath}`;
-        const res = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          console.error("Erro ao baixar vídeo:", res.status);
-          return;
-        }
-
-        const blob = await res.blob();
-        document.getElementById("video").src = URL.createObjectURL(blob);
+        document.getElementById("video").src = signedUrl;
       }
     </script>
 
