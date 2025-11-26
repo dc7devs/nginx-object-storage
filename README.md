@@ -50,7 +50,7 @@ import cv2
 import uuid
 
 async def main():
-  client = MediaClient("http://172.0.0.1:3333")
+  client = MediaClient("http://172.30.148.6:3333")
 
   await client.login("kgcmina@admin", "kgcmina@admin")
 
@@ -72,7 +72,7 @@ from media_sdk import MediaClient
 import kafka
 
 def main:
-  client = MediaClient("http://172.0.0.1:3333")
+  client = MediaClient("http://172.30.148.6:3333")
 
   await client.login("kgcmina@admin", "kgcmina@admin")
 
