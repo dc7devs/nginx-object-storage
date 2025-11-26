@@ -29,7 +29,7 @@ curl -X POST http://<$HOST>:3333/auth/login \
 #### **SIGN URL**
 
 ```bash
-curl "http://<$HOST>:3333/media/sign" \
+curl -X POST http://<$HOST>:3333/media/sign \
   -H "Authorization: Bearer <TOKEN>" \
   -d '{ "path": "/videos/video1.mp4" }'
 ```
